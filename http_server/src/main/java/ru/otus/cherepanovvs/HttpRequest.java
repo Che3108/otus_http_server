@@ -3,11 +3,15 @@ package ru.otus.cherepanovvs;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class HttpRequest {
     private String rawRequest;
     private String uri;
     private HttpMethod method;
     private Map<String, String> parameters;
+    private static final Logger logger = LogManager.getLogger(HttpRequest.class.getName());
 
     public String getUri() {
         return uri;
@@ -45,10 +49,10 @@ public class HttpRequest {
 
     public void printInfo(boolean showRawRequest) {
         if (showRawRequest) {
-            System.out.println(rawRequest);
+            logger.debug("Запроса клиента: " + rawRequest);
         }
-        System.out.println("URI: " + uri);
-        System.out.println("HTTP METHOD: " + method);
+        logger.info("URI: " + uri);
+        logger.info("HTTP METHOD: " + method);
     }
 }
 
