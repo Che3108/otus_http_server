@@ -2,33 +2,37 @@ package ru.otus.cherepanovvs;
 
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.net.Socket;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class HttpServer {
     private int port;
-    private Dispatcher dispatcher;
+    private static final Logger logger = LogManager.getLogger(HttpServer.class.getName());
+    private final ExecutorService pool;
 
     public HttpServer(int port) {
         this.port = port;
-        this.dispatcher = new Dispatcher();
+        pool = Executors.newCachedThreadPool();
     }
 
     public void start() {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
-            System.out.println("Сервер запущен на порту: " + port);
-            while (true) {
-                try (Socket socket = serverSocket.accept()) {
-                    byte[] buffer = new byte[8192];
-                    int n = socket.getInputStream().read(buffer);
-                    String rawRequest = new String(buffer, 0, n);
-                    HttpRequest httpRequest = new HttpRequest(rawRequest);
-                    dispatcher.execute(httpRequest, socket.getOutputStream());
-                } catch (IOException e) {
-                    e.printStackTrace();
+            logger.info("Сервер запущен на порту: " + port);
+
+            try {
+                while (true) {
+                    pool.execute(new Handler(serverSocket.accept()));
                 }
+            } catch (IOException e) {
+                logger.error("Ошибка соединения", e);
+                pool.shutdown();
             }
+
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Ошибка запуска сервера", e);
         }
     }
 }
