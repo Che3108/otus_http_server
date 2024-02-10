@@ -1,5 +1,6 @@
 package ru.otus.cherepanovvs;
 
+import ru.otus.cherepanovvs.processors.BooksRequestProcessor;
 import ru.otus.cherepanovvs.processors.HelloWorldRequestProcessor;
 import ru.otus.cherepanovvs.processors.OperationAddRequestProcessor;
 import ru.otus.cherepanovvs.processors.RequestProcessor;
@@ -18,6 +19,7 @@ public class Dispatcher {
         this.router = new HashMap<>();
         this.router.put("/add", new OperationAddRequestProcessor());         // /GET /add => OperationAddRequestProcessor
         this.router.put("/hello_world", new HelloWorldRequestProcessor());   // /GET /hello_world => HelloWorldRequestProcessor
+        this.router.put("/books", new BooksRequestProcessor());
         this.unknownRequestProcessor = new UnknownRequestProcessor();
     }
 
